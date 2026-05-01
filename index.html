@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tracker Mundial 2026</title>
     <style>
-        /* Diseño oscuro, limpio y moderno */
         body {
             background-color: #121212;
             color: #ffffff;
@@ -17,10 +16,11 @@
 
         h1 {
             text-align: center;
-            color: #00d26a; /* Verde cancha de futbol */
-            font-weight: 300;
+            color: #00d26a; 
+            font-weight: 800;
             letter-spacing: 2px;
             margin-bottom: 40px;
+            text-transform: uppercase;
         }
 
         .tracker-container {
@@ -28,59 +28,81 @@
             margin: 0 auto;
         }
 
-        /* Estilo del menú desplegable por país */
-        details {
+        .group-details {
             background-color: #1e1e1e;
             border-radius: 8px;
-            margin-bottom: 15px;
-            padding: 15px;
+            margin-bottom: 20px;
             border: 1px solid #333;
-            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        details[open] {
-            border-color: #00d26a;
-        }
-
-        summary {
-            font-size: 1.5em;
+        .group-summary {
+            font-size: 1.6em;
             font-weight: bold;
             cursor: pointer;
             list-style: none;
+            padding: 15px 20px;
+            background-color: #161616;
+            color: #00d26a;
+            border-bottom: 1px solid #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            outline: none;
         }
 
-        summary::-webkit-details-marker {
-            display: none;
+        .group-summary::-webkit-details-marker { display: none; }
+        .group-summary::after { content: '▼'; font-size: 0.7em; transition: transform 0.3s; }
+        .group-details[open] > .group-summary::after { transform: rotate(180deg); }
+
+        .team-details {
+            background-color: #252525;
+            margin: 10px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #00d26a;
         }
 
-        summary::after {
-            content: '+';
-            color: #00d26a;
+        .team-summary {
             font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .team-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding-right: 15px;
         }
 
-        details[open] summary::after {
-            content: '-';
+        .counter {
+            background-color: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #00d26a;
         }
 
-        /* Cuadrícula de estampas */
+        .team-summary::-webkit-details-marker { display: none; }
+        .team-summary::after { content: '+'; color: #00d26a; font-size: 1.2em; }
+        .team-details[open] > .team-summary::after { content: '-'; }
+
         .stickers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-            padding-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+            gap: 12px;
+            padding: 15px;
+            background-color: #1a1a1a;
             border-top: 1px solid #333;
         }
 
-        /* Estilo individual de la estampa */
         .sticker {
             aspect-ratio: 3 / 4;
-            background-color: #2a2a2a;
+            background-color: #333;
             border: 2px dashed #555;
             border-radius: 6px;
             display: flex;
@@ -91,74 +113,114 @@
             cursor: pointer;
             user-select: none;
             transition: all 0.2s ease;
+            color: #aaa;
         }
 
-        .sticker:hover {
-            transform: scale(1.1);
-        }
+        .sticker:hover { transform: scale(1.08); }
 
-        /* Estado: Estampa conseguida */
         .sticker.collected {
             background-color: #00d26a;
             color: #000;
             border: 2px solid #00d26a;
-            box-shadow: 0 0 10px rgba(0, 210, 106, 0.5);
+            box-shadow: 0 0 10px rgba(0, 210, 106, 0.4);
         }
     </style>
 </head>
 <body>
 
     <div class="tracker-container">
-        <h1>ÁLBUM MUNDIAL 2026</h1>
-
-        <!-- País: Argentina -->
-        <details>
-            <summary>Argentina</summary>
-            <div class="stickers-grid" id="grid-ARG">
-                <!-- Se generarán con JavaScript para no escribir 20 divs a mano -->
-            </div>
-        </details>
-
-        <!-- País: Brasil -->
-        <details>
-            <summary>Brasil</summary>
-            <div class="stickers-grid" id="grid-BRA">
-                <!-- Se generarán con JavaScript -->
-            </div>
-        </details>
-        
-        <!-- País: México -->
-        <details>
-            <summary>México</summary>
-            <div class="stickers-grid" id="grid-MEX">
-                <!-- Se generarán con JavaScript -->
-            </div>
-        </details>
+        <h1>Tracker Mundial 2026</h1>
+        <div id="album-container"></div>
     </div>
 
     <script>
-        // Función para generar las estampas automáticamente
-        function generateStickers(countryCode, totalStickers) {
-            const grid = document.getElementById(`grid-${countryCode}`);
+        // Diccionario oficial con los grupos reales del Mundial 2026
+        const tournamentGroups = {
+            "Grupo A": ["México", "Sudáfrica", "Corea del Sur", "Rep. Checa"],
+            "Grupo B": ["Canadá", "Bosnia y Herzegovina", "Catar", "Suiza"],
+            "Grupo C": ["Brasil", "Marruecos", "Haití", "Escocia"],
+            "Grupo D": ["Estados Unidos", "Paraguay", "Australia", "Turquía"],
+            "Grupo E": ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"],
+            "Grupo F": ["Países Bajos", "Japón", "Suecia", "Túnez"],
+            "Grupo G": ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"],
+            "Grupo H": ["España", "Cabo Verde", "Arabia Saudita", "Uruguay"],
+            "Grupo I": ["Francia", "Senegal", "Irak", "Noruega"],
+            "Grupo J": ["Argentina", "Argelia", "Austria", "Jordania"],
+            "Grupo K": ["Portugal", "RD Congo", "Uzbekistán", "Colombia"],
+            "Grupo L": ["Inglaterra", "Croacia", "Ghana", "Panamá"]
+        };
+
+        const STICKERS_PER_TEAM = 20;
+        const container = document.getElementById('album-container');
+
+        // Cargar datos guardados
+        let savedStickers = JSON.parse(localStorage.getItem('mundial26_stickers')) || {};
+
+        // Generar la interfaz
+        for (const [groupName, teams] of Object.entries(tournamentGroups)) {
             
-            for (let i = 1; i <= totalStickers; i++) {
-                const stickerDiv = document.createElement('div');
-                stickerDiv.classList.add('sticker');
-                stickerDiv.textContent = i; // Solo el número de la estampa
+            const groupDetails = document.createElement('details');
+            groupDetails.className = 'group-details';
+            groupDetails.innerHTML = `<summary class="group-summary">${groupName}</summary>`;
+
+            teams.forEach(team => {
+                const teamDetails = document.createElement('details');
+                teamDetails.className = 'team-details';
                 
-                // Evento para cambiar de estado (conseguida / no conseguida)
-                stickerDiv.addEventListener('click', function() {
-                    this.classList.toggle('collected');
-                });
+                // Calcular cuántas estampas tiene ya este equipo
+                let collectedCount = 0;
+                for (let i = 1; i <= STICKERS_PER_TEAM; i++) {
+                    if (savedStickers[`${team}-${i}`]) collectedCount++;
+                }
 
-                grid.appendChild(stickerDiv);
-            }
+                // Crear el encabezado del equipo con su contador
+                const teamSummary = document.createElement('summary');
+                teamSummary.className = 'team-summary';
+                teamSummary.innerHTML = `
+                    <div class="team-info">
+                        <span>${team}</span>
+                        <span class="counter" id="counter-${team}">${collectedCount}/${STICKERS_PER_TEAM}</span>
+                    </div>
+                `;
+
+                const grid = document.createElement('div');
+                grid.className = 'stickers-grid';
+
+                for (let i = 1; i <= STICKERS_PER_TEAM; i++) {
+                    const stickerId = `${team}-${i}`;
+                    const stickerDiv = document.createElement('div');
+                    stickerDiv.className = 'sticker';
+                    stickerDiv.textContent = i;
+
+                    if (savedStickers[stickerId]) {
+                        stickerDiv.classList.add('collected');
+                    }
+
+                    stickerDiv.addEventListener('click', function() {
+                        this.classList.toggle('collected');
+                        const isCollected = this.classList.contains('collected');
+                        
+                        // Guardar estado
+                        savedStickers[stickerId] = isCollected;
+                        localStorage.setItem('mundial26_stickers', JSON.stringify(savedStickers));
+
+                        // Actualizar el contador visualmente
+                        const counterSpan = document.getElementById(`counter-${team}`);
+                        let currentCount = parseInt(counterSpan.textContent.split('/')[0]);
+                        currentCount = isCollected ? currentCount + 1 : currentCount - 1;
+                        counterSpan.textContent = `${currentCount}/${STICKERS_PER_TEAM}`;
+                    });
+
+                    grid.appendChild(stickerDiv);
+                }
+
+                teamDetails.appendChild(teamSummary);
+                teamDetails.appendChild(grid);
+                groupDetails.appendChild(teamDetails);
+            });
+
+            container.appendChild(groupDetails);
         }
-
-        // Generamos 20 estampas para cada país
-        generateStickers('ARG', 20);
-        generateStickers('BRA', 20);
-        generateStickers('MEX', 20);
     </script>
 </body>
 </html>
