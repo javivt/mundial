@@ -3,24 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker Mundial 2026</title>
+    <title>Tracker Mundial - Estilo Brasil 2014</title>
     <style>
+        /* Paleta Brasil 2014: Azul Cobalto, Amarillo Vibrante y Verde */
         body {
-            background-color: #121212;
+            background-color: #002776; /* Azul bandera */
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            min-height: 100vh;
         }
 
         h1 {
             text-align: center;
-            color: #00d26a; 
-            font-weight: 800;
+            color: #FFDF00; /* Amarillo Brasil */
+            font-weight: 900;
+            font-size: 2.2em;
             letter-spacing: 2px;
             margin-bottom: 40px;
             text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .tracker-container {
@@ -29,46 +33,55 @@
         }
 
         .group-details {
-            background-color: #1e1e1e;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             margin-bottom: 20px;
-            border: 1px solid #333;
+            border: 2px solid #009c3b; /* Verde Brasil */
             overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Color especial para la pestaña de Especiales */
+        .group-details.especiales {
+            border-color: #FFDF00;
+        }
+
         .group-details.especiales .group-summary {
-            color: #ffea00;
-            border-bottom: 1px solid #ffea00;
+            background-color: rgba(255, 223, 0, 0.1);
+            color: #FFDF00;
         }
         
         .group-details.especiales .team-details {
-            border-left: 4px solid #ffea00;
+            border-left: 4px solid #FFDF00;
         }
 
         .group-summary {
-            font-size: 1.6em;
-            font-weight: bold;
+            font-size: 1.5em;
+            font-weight: 800;
             cursor: pointer;
             list-style: none;
-            padding: 15px 20px;
-            background-color: #161616;
-            color: #00d26a;
-            border-bottom: 1px solid #333;
+            padding: 18px 20px;
+            background: #009c3b;
+            color: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            text-transform: uppercase;
         }
 
         .group-summary::-webkit-details-marker { display: none; }
-        .group-summary::after { content: '▼'; font-size: 0.7em; transition: transform 0.3s; }
-        .group-details[open] > .group-summary::after { transform: rotate(180deg); }
+        .group-summary::after { content: '▼'; font-size: 0.7em; transition: transform 0.3s; color: rgba(255,255,255,0.8); }
+        .group-details[open] > .group-summary::after { transform: rotate(180deg); color: #fff; }
 
         .team-details {
-            background-color: #252525;
-            margin: 10px 15px;
-            border-radius: 6px;
-            border-left: 4px solid #00d26a;
+            background: rgba(0, 0, 0, 0.2);
+            margin: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #FFDF00;
+            transition: background 0.3s;
+        }
+
+        .team-details:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .team-summary {
@@ -76,7 +89,7 @@
             font-weight: 600;
             cursor: pointer;
             list-style: none;
-            padding: 12px 15px;
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -90,61 +103,107 @@
         }
 
         .counter {
-            background-color: #333;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            color: #00d26a;
-        }
-        
-        .group-details.especiales .counter {
-            color: #ffea00;
+            background: #FFDF00;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #002776;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .team-summary::-webkit-details-marker { display: none; }
-        .team-summary::after { content: '+'; font-size: 1.2em; }
-        .team-details[open] > .team-summary::after { content: '-'; }
+        .team-summary::after { content: '+'; font-size: 1.2em; font-weight: bold; color: rgba(255,255,255,0.5); }
+        .team-details[open] > .team-summary::after { content: '-'; color: #FFDF00; }
 
         .stickers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
             gap: 12px;
             padding: 15px;
-            background-color: #1a1a1a;
-            border-top: 1px solid #333;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
 
         .sticker {
             aspect-ratio: 3 / 4;
-            background-color: #333;
-            border: 2px dashed #555;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9em; /* Letra un poco más chica para que quepan prefijos como FWC */
+            font-size: 0.9em;
             cursor: pointer;
             user-select: none;
             transition: all 0.2s ease;
-            color: #aaa;
+            color: rgba(255, 255, 255, 0.6);
             text-align: center;
         }
 
-        .sticker:hover { transform: scale(1.08); }
+        .sticker:hover { transform: scale(1.08); background-color: rgba(255, 255, 255, 0.2); }
 
+        /* Estampa conseguida: Verde vibrante */
         .sticker.collected {
-            background-color: #00d26a;
-            color: #000;
-            border: 2px solid #00d26a;
-            box-shadow: 0 0 10px rgba(0, 210, 106, 0.4);
+            background: #009c3b;
+            color: #fff;
+            border: 1px solid #009c3b;
+            box-shadow: 0 0 10px rgba(0, 156, 59, 0.6);
+            transform: scale(1.05);
         }
 
-        /* Color dorado para las estampas especiales conseguidas */
+        /* Especiales conseguidas: Amarillo vibrante */
         .group-details.especiales .sticker.collected {
-            background-color: #ffea00;
-            border-color: #ffea00;
-            box-shadow: 0 0 10px rgba(255, 234, 0, 0.4);
+            background: #FFDF00;
+            color: #002776;
+            border: 1px solid #FFDF00;
+            box-shadow: 0 0 10px rgba(255, 223, 0, 0.6);
+        }
+
+        /* SECCIÓN DE PROGRESO GLOBAL */
+        .progress-section {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            border: 2px solid #FFDF00;
+            text-align: center;
+        }
+
+        .progress-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFDF00;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            height: 30px;
+            margin-top: 15px;
+            overflow: hidden;
+            border: 2px solid #009c3b;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: #FFDF00;
+            width: 0%; /* Se actualiza con JS */
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .progress-stats {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #ffffff;
         }
 
     </style>
@@ -152,23 +211,28 @@
 <body>
 
     <div class="tracker-container">
-        <h1>Tracker Mundial 2026</h1>
+        <h1>Álbum Mundial 2026</h1>
         <div id="album-container"></div>
+
+        <!-- Nueva Gráfica de Progreso -->
+        <div class="progress-section">
+            <div class="progress-title">Progreso del Álbum</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="global-progress-fill"></div>
+            </div>
+            <div class="progress-stats" id="global-progress-text">0 / 0 estampas (0%)</div>
+        </div>
     </div>
 
     <script>
-        // Función auxiliar para generar automáticamente los números de las estampas
-        // Ejemplo: generate(20) -> ["1", "2", ... "20"]
-        // Ejemplo: generate(14, "C") -> ["C1", "C2", ... "C14"]
         const generateStickers = (count, prefix = "") => {
             return Array.from({length: count}, (_, i) => `${prefix}${i + 1}`);
         };
 
-        // Nueva estructura de datos súper flexible
         const tournamentData = {
             "🌟 Especiales": {
                 "Panini": ["00"],
-                "FIFA World Cup (FWC)": generateStickers(19, "FWC "), // Puse 18 por poner un número, ajustalo a las que vengan en el álbum
+                "FIFA World Cup (FWC)": generateStickers(18, "FWC "), 
                 "Coca-Cola": generateStickers(14, "C")
             },
             "Grupo A": {
@@ -247,14 +311,27 @@
 
         const container = document.getElementById('album-container');
         let savedStickers = JSON.parse(localStorage.getItem('mundial26_stickers')) || {};
+        
+        // Variables para la gráfica de progreso global
+        let totalGlobalStickers = 0;
+        let collectedGlobalStickers = 0;
 
-        // Renderizar todo
-        for (const [groupName, teams] of Object.entries(tournamentData)) {
+        // Función para actualizar la gráfica visualmente
+        function updateGlobalProgress() {
+            const fillElement = document.getElementById('global-progress-fill');
+            const textElement = document.getElementById('global-progress-text');
             
+            const percentage = totalGlobalStickers === 0 ? 0 : Math.round((collectedGlobalStickers / totalGlobalStickers) * 100);
+            
+            fillElement.style.width = `${percentage}%`;
+            textElement.textContent = `${collectedGlobalStickers} / ${totalGlobalStickers} estampas (${percentage}%)`;
+        }
+
+        // Renderizar todo y calcular totales
+        for (const [groupName, teams] of Object.entries(tournamentData)) {
             const groupDetails = document.createElement('details');
             groupDetails.className = 'group-details';
             
-            // Si es el grupo de especiales, le damos un estilo distinto (dorado)
             if(groupName === "🌟 Especiales") {
                 groupDetails.classList.add('especiales');
             }
@@ -268,9 +345,15 @@
                 const totalStickersForTeam = stickersArray.length;
                 let collectedCount = 0;
 
-                // Contar cuántas tenemos de este equipo/sección
+                // Sumar al total global del álbum
+                totalGlobalStickers += totalStickersForTeam;
+
                 stickersArray.forEach(stickerLabel => {
-                    if (savedStickers[`${teamName}-${stickerLabel}`]) collectedCount++;
+                    const stickerId = `${teamName}-${stickerLabel}`;
+                    if (savedStickers[stickerId]) {
+                        collectedCount++;
+                        collectedGlobalStickers++; // Sumar a las conseguidas globales
+                    }
                 });
 
                 const teamSummary = document.createElement('summary');
@@ -285,7 +368,6 @@
                 const grid = document.createElement('div');
                 grid.className = 'stickers-grid';
 
-                // Generar cada cuadrito
                 stickersArray.forEach(stickerLabel => {
                     const stickerId = `${teamName}-${stickerLabel}`;
                     const stickerDiv = document.createElement('div');
@@ -303,10 +385,15 @@
                         savedStickers[stickerId] = isCollected;
                         localStorage.setItem('mundial26_stickers', JSON.stringify(savedStickers));
 
+                        // Actualizar contador del equipo
                         const counterSpan = document.getElementById(`counter-${teamName}`);
                         let currentCount = parseInt(counterSpan.textContent.split('/')[0]);
                         currentCount = isCollected ? currentCount + 1 : currentCount - 1;
                         counterSpan.textContent = `${currentCount}/${totalStickersForTeam}`;
+
+                        // Actualizar contador global y gráfica
+                        isCollected ? collectedGlobalStickers++ : collectedGlobalStickers--;
+                        updateGlobalProgress();
                     });
 
                     grid.appendChild(stickerDiv);
@@ -319,6 +406,9 @@
 
             container.appendChild(groupDetails);
         }
+
+        // Llamada inicial para pintar la barra la primera vez que se abre la página
+        updateGlobalProgress();
     </script>
 </body>
 </html>
