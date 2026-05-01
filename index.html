@@ -3,365 +3,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker Mundial - Estilo Brasil 2014</title>
+    <title>Tracker Mundial - Edición Premium</title>
     <style>
-        /* Paleta Brasil 2014: Azul Cobalto, Amarillo Vibrante y Verde */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&display=swap');
+
         body {
-            background-color: #002776; /* Azul bandera */
+            background: radial-gradient(circle at top center, #004dcf 0%, #002776 60%, #001236 100%);
+            background-attachment: fixed;
             color: #ffffff;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
             min-height: 100vh;
+            padding-top: 70px; 
+        }
+
+        /* --- MENÚ HAMBURGUESA Y NAVEGACIÓN --- */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(0, 18, 54, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-btn {
+            font-size: 2em;
+            color: #FFDF00;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .menu-btn:active { transform: scale(0.9); }
+
+        .app-title-mini {
+            margin-left: 20px;
+            font-weight: 900;
+            font-style: italic;
+            color: #FFF;
+            font-size: 1.2em;
+            letter-spacing: 1px;
+        }
+
+        /* Sidebar del Menú */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: -300px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: rgba(0, 24, 72, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-right: 2px solid #009c3b;
+            transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Para que se pueda scrollear si el menú crece mucho */
+        }
+
+        .sidebar.active { left: 0; }
+
+        .sidebar a {
+            padding: 18px 25px;
+            color: #FFF;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.2s;
+        }
+
+        .sidebar a:hover, .sidebar a:active {
+            background: linear-gradient(90deg, rgba(0, 156, 59, 0.4) 0%, transparent 100%);
+            color: #FFDF00;
+            border-left: 4px solid #FFDF00;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+            margin: 10px 0;
+        }
+
+        /* Overlay oscuro al abrir el menú */
+        .overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .overlay.active { display: block; opacity: 1; }
+
+        /* --- PANTALLAS (VISTAS) --- */
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .view-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
             text-align: center;
-            color: #FFDF00; /* Amarillo Brasil */
+            color: #FFDF00; 
             font-weight: 900;
-            font-size: 2.2em;
-            letter-spacing: 2px;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .tracker-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .group-details {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            font-size: 2.5em;
+            letter-spacing: -1px;
+            margin-top: 10px;
             margin-bottom: 20px;
-            border: 2px solid #009c3b; /* Verde Brasil */
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .group-details.especiales {
-            border-color: #FFDF00;
-        }
-
-        .group-details.especiales .group-summary {
-            background-color: rgba(255, 223, 0, 0.1);
-            color: #FFDF00;
-        }
-        
-        .group-details.especiales .team-details {
-            border-left: 4px solid #FFDF00;
-        }
-
-        .group-summary {
-            font-size: 1.5em;
-            font-weight: 800;
-            cursor: pointer;
-            list-style: none;
-            padding: 18px 20px;
-            background: #009c3b;
-            color: #ffffff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             text-transform: uppercase;
+            text-shadow: 0px 4px 15px rgba(255, 223, 0, 0.4);
+            font-style: italic;
         }
 
+        .tracker-container { max-width: 800px; margin: 0 auto; padding-bottom: 40px; }
+
+        /* --- MODO CACERÍA --- */
+        .hunt-mode-panel { background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)); border: 2px solid #FFDF00; border-radius: 15px; padding: 15px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+        .hunt-mode-panel label { font-size: 1.1em; font-weight: 700; color: #FFDF00; cursor: pointer; display: flex; align-items: center; gap: 12px; text-transform: uppercase; }
+        input[type="checkbox"].hunt-toggle { width: 28px; height: 28px; accent-color: #009c3b; cursor: pointer; }
+
+        body.hunt-mode .sticker.collected { display: none !important; }
+        body.hunt-mode .team-details.completed-team { display: none !important; }
+
+        /* --- GRUPOS Y EQUIPOS --- */
+        .group-details { background: rgba(255, 255, 255, 0.03); border-radius: 16px; margin-bottom: 25px; border: 2px solid rgba(0, 156, 59, 0.5); overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); }
+        .group-details.especiales { border-color: rgba(255, 223, 0, 0.5); }
+        .group-details.especiales .group-summary { background: linear-gradient(90deg, #b89600 0%, #8a7000 100%); color: #FFF; }
+        .group-details.especiales .team-details { border-left: 5px solid #FFDF00; }
+
+        .group-summary { font-size: 1.4em; font-weight: 900; cursor: pointer; list-style: none; padding: 20px; background: linear-gradient(90deg, #009c3b 0%, #00702a 100%); color: #ffffff; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 1px; }
+        .group-info { display: flex; align-items: center; width: 100%; }
+        .group-counter { background: rgba(0, 0, 0, 0.4); padding: 6px 14px; border-radius: 20px; font-size: 0.75em; margin-left: auto; margin-right: 15px; border: 1px solid rgba(255,255,255,0.2); font-weight: 700; }
         .group-summary::-webkit-details-marker { display: none; }
-        .group-summary::after { content: '▼'; font-size: 0.7em; transition: transform 0.3s; color: rgba(255,255,255,0.8); }
+        .group-summary::after { content: '▼'; font-size: 0.8em; transition: transform 0.3s; color: rgba(255,255,255,0.6); }
         .group-details[open] > .group-summary::after { transform: rotate(180deg); color: #fff; }
 
-        .team-details {
-            background: rgba(0, 0, 0, 0.2);
-            margin: 12px 15px;
-            border-radius: 8px;
-            border-left: 4px solid #FFDF00;
-            transition: background 0.3s;
-        }
+        .team-details { background: rgba(0, 0, 0, 0.3); margin: 15px; border-radius: 10px; border-left: 5px solid #FFDF00; transition: all 0.3s ease; }
+        .team-details:hover { background: rgba(255, 255, 255, 0.05); }
+        .team-details.completed-team { border-left: 8px solid #009c3b; background: linear-gradient(90deg, rgba(0, 156, 59, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%); animation: glow 2s infinite alternate; }
 
-        .team-details:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
+        @keyframes glow { from { box-shadow: inset 0 0 5px rgba(0, 156, 59, 0.1); } to { box-shadow: inset 0 0 15px rgba(0, 156, 59, 0.4); } }
 
-        .team-summary {
-            font-size: 1.2em;
-            font-weight: 600;
-            cursor: pointer;
-            list-style: none;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .team-info {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            padding-right: 15px;
-        }
+        .team-details.completed-team .team-name { color: #FFDF00; text-shadow: 0 0 10px rgba(255, 223, 0, 0.5); font-weight: 900; }
+        .team-details.completed-team .team-name::after { content: ' 🏆'; }
 
-        .counter {
-            background: #FFDF00;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-            color: #002776;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
+        .team-summary { font-size: 1.2em; font-weight: 700; cursor: pointer; list-style: none; padding: 18px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .team-info { display: flex; justify-content: space-between; width: 100%; padding-right: 15px; align-items: center; }
+        .counter { background: #FFDF00; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 900; color: #002776; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); }
         .team-summary::-webkit-details-marker { display: none; }
-        .team-summary::after { content: '+'; font-size: 1.2em; font-weight: bold; color: rgba(255,255,255,0.5); }
+        .team-summary::after { content: '+'; font-size: 1.4em; font-weight: bold; color: rgba(255,255,255,0.4); }
         .team-details[open] > .team-summary::after { content: '-'; color: #FFDF00; }
 
-        .stickers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
-            gap: 12px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
+        .stickers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 15px; padding: 20px; background: rgba(0, 0, 0, 0.4); border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
+        .sticker { aspect-ratio: 3 / 4; background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1em; cursor: pointer; user-select: none; color: rgba(255, 255, 255, 0.7); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .sticker:hover { transform: translateY(-5px) scale(1.05); border-color: rgba(255, 255, 255, 0.5); color: #fff; }
 
-        .sticker {
-            aspect-ratio: 3 / 4;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9em;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s ease;
-            color: rgba(255, 255, 255, 0.6);
-            text-align: center;
-        }
+        @keyframes popIn { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1.05); } }
 
-        .sticker:hover { transform: scale(1.08); background-color: rgba(255, 255, 255, 0.2); }
+        .sticker.collected { background: linear-gradient(135deg, #00cc4d 0%, #009c3b 100%); color: #fff; border: 1px solid #55ff90; box-shadow: 0 8px 15px rgba(0, 156, 59, 0.6); animation: popIn 0.3s ease-out forwards; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .group-details.especiales .sticker.collected { background: linear-gradient(135deg, #ffe633 0%, #FFDF00 100%); color: #002776; border: 1px solid #fff399; box-shadow: 0 8px 15px rgba(255, 223, 0, 0.6); text-shadow: none; }
 
-        /* Estampa conseguida: Verde vibrante */
-        .sticker.collected {
-            background: #009c3b;
-            color: #fff;
-            border: 1px solid #009c3b;
-            box-shadow: 0 0 10px rgba(0, 156, 59, 0.6);
-            transform: scale(1.05);
-        }
+        /* --- PROGRESO GLOBAL ANIMADO --- */
+        .progress-section { background: rgba(0, 0, 0, 0.5); padding: 30px; border-radius: 16px; margin-top: 30px; margin-bottom: 40px; border: 2px solid #FFDF00; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .progress-title { font-size: 1.8em; font-weight: 900; color: #FFDF00; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;}
+        .progress-bar-container { width: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 30px; height: 35px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2); box-shadow: inset 0 5px 10px rgba(0,0,0,0.5); }
+        .progress-bar-fill { height: 100%; background-color: #009c3b; background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent); background-size: 40px 40px; width: 0%; transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: moveStripes 2s linear infinite; }
+        @keyframes moveStripes { 0% { background-position: 0 0; } 100% { background-position: 40px 0; } }
+        .progress-stats { margin-top: 20px; font-weight: 900; font-size: 1.4em; color: #ffffff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
-        /* Especiales conseguidas: Amarillo vibrante */
-        .group-details.especiales .sticker.collected {
-            background: #FFDF00;
-            color: #002776;
-            border: 1px solid #FFDF00;
-            box-shadow: 0 0 10px rgba(255, 223, 0, 0.6);
-        }
-
-        /* SECCIÓN DE PROGRESO GLOBAL */
-        .progress-section {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 40px;
-            margin-bottom: 40px;
-            border: 2px solid #FFDF00;
-            text-align: center;
-        }
-
-        .progress-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #FFDF00;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            height: 30px;
-            margin-top: 15px;
-            overflow: hidden;
-            border: 2px solid #009c3b;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: #FFDF00;
-            width: 0%; /* Se actualiza con JS */
-            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .progress-stats {
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 1.2em;
-            color: #ffffff;
-        }
-
+        /* --- PANTALLA ESTADÍSTICAS POR PAÍS --- */
+        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+        .stat-card { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-bar-bg { background: rgba(255,255,255,0.1); height: 12px; border-radius: 6px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        .stat-bar-fill { height: 100%; width: 0%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .group-header-stats { color: #FFDF00; font-weight: 900; font-size: 1.5em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid rgba(255, 223, 0, 0.3); padding-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="tracker-container">
-        <h1>Álbum Mundial 2026</h1>
-        <div id="album-container"></div>
+    <div class="top-bar">
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
+        <div class="app-title-mini">MUNDIAL 26</div>
+    </div>
 
-        <!-- Nueva Gráfica de Progreso -->
-        <div class="progress-section">
-            <div class="progress-title">Progreso del Álbum</div>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="global-progress-fill"></div>
+    <div class="overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <nav class="sidebar" id="sidebar">
+        <a href="#" onclick="switchView('view-album')">📖 Mi Álbum</a>
+        <a href="#" onclick="switchView('view-stats')">📊 Mi Progreso</a>
+        <div class="sidebar-divider"></div>
+        <a href="#" onclick="exportarFaltantes()">📲 Exportar Faltantes</a>
+        <div class="sidebar-divider"></div>
+        <a href="#" onclick="exportarRespaldo()">📤 Crear Respaldo</a>
+        <a href="#" onclick="importarRespaldo()">📥 Cargar Respaldo</a>
+    </nav>
+
+    <div class="tracker-container">
+        
+        <div id="view-album" class="view-section active">
+            <h1>Colección</h1>
+            
+            <div class="hunt-mode-panel">
+                <label>
+                    <input type="checkbox" class="hunt-toggle" id="hunt-mode-checkbox">
+                 Ocultar stickers ya conseguidos.
+                </label>
             </div>
-            <div class="progress-stats" id="global-progress-text">0 / 0 estampas (0%)</div>
+
+            <div id="album-container"></div>
         </div>
+
+        <div id="view-stats" class="view-section">
+            <h1>Dashboard</h1>
+            <p style="text-align: center; color: rgba(255,255,255,0.7);">El resumen completo de tu colección.</p>
+
+            <div class="progress-section">
+                <div class="progress-title">Tu Colección Global</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="global-progress-fill"></div>
+                </div>
+                <div class="progress-stats" id="global-progress-text">0 / 0 (0%)</div>
+            </div>
+
+            <div id="stats-container" class="stats-grid"></div>
+        </div>
+
     </div>
 
     <script>
-        const generateStickers = (count, prefix = "") => {
-            return Array.from({length: count}, (_, i) => `${prefix}${i + 1}`);
-        };
+        const generateStickers = (count, prefix = "") => Array.from({length: count}, (_, i) => `${prefix}${i + 1}`);
 
         const tournamentData = {
-            "🌟 Especiales": {
-                "Panini": ["00"],
-                "FIFA World Cup (FWC)": generateStickers(18, "FWC "), 
-                "Coca-Cola": generateStickers(14, "C")
-            },
-            "Grupo A": {
-                "México": generateStickers(20),
-                "Sudáfrica": generateStickers(20),
-                "Corea del Sur": generateStickers(20),
-                "Rep. Checa": generateStickers(20)
-            },
-            "Grupo B": {
-                "Canadá": generateStickers(20),
-                "Bosnia y Herzegovina": generateStickers(20),
-                "Catar": generateStickers(20),
-                "Suiza": generateStickers(20)
-            },
-            "Grupo C": {
-                "Brasil": generateStickers(20),
-                "Marruecos": generateStickers(20),
-                "Haití": generateStickers(20),
-                "Escocia": generateStickers(20)
-            },
-            "Grupo D": {
-                "Estados Unidos": generateStickers(20),
-                "Paraguay": generateStickers(20),
-                "Australia": generateStickers(20),
-                "Turquía": generateStickers(20)
-            },
-            "Grupo E": {
-                "Alemania": generateStickers(20),
-                "Curazao": generateStickers(20),
-                "Costa de Marfil": generateStickers(20),
-                "Ecuador": generateStickers(20)
-            },
-            "Grupo F": {
-                "Países Bajos": generateStickers(20),
-                "Japón": generateStickers(20),
-                "Suecia": generateStickers(20),
-                "Túnez": generateStickers(20)
-            },
-            "Grupo G": {
-                "Bélgica": generateStickers(20),
-                "Egipto": generateStickers(20),
-                "Irán": generateStickers(20),
-                "Nueva Zelanda": generateStickers(20)
-            },
-            "Grupo H": {
-                "España": generateStickers(20),
-                "Cabo Verde": generateStickers(20),
-                "Arabia Saudita": generateStickers(20),
-                "Uruguay": generateStickers(20)
-            },
-            "Grupo I": {
-                "Francia": generateStickers(20),
-                "Senegal": generateStickers(20),
-                "Irak": generateStickers(20),
-                "Noruega": generateStickers(20)
-            },
-            "Grupo J": {
-                "Argentina": generateStickers(20),
-                "Argelia": generateStickers(20),
-                "Austria": generateStickers(20),
-                "Jordania": generateStickers(20)
-            },
-            "Grupo K": {
-                "Portugal": generateStickers(20),
-                "RD Congo": generateStickers(20),
-                "Uzbekistán": generateStickers(20),
-                "Colombia": generateStickers(20)
-            },
-            "Grupo L": {
-                "Inglaterra": generateStickers(20),
-                "Croacia": generateStickers(20),
-                "Ghana": generateStickers(20),
-                "Panamá": generateStickers(20)
-            }
+            "🌟 Especiales": { "Panini": ["00"], "FIFA World Cup (FWC)": generateStickers(19, "FWC "), "Coca-Cola": generateStickers(14, "C") },
+            "Grupo A": { "México": generateStickers(20), "Sudáfrica": generateStickers(20), "Corea del Sur": generateStickers(20), "Rep. Checa": generateStickers(20) },
+            "Grupo B": { "Canadá": generateStickers(20), "Bosnia y Herzegovina": generateStickers(20), "Catar": generateStickers(20), "Suiza": generateStickers(20) },
+            "Grupo C": { "Brasil": generateStickers(20), "Marruecos": generateStickers(20), "Haití": generateStickers(20), "Escocia": generateStickers(20) },
+            "Grupo D": { "Estados Unidos": generateStickers(20), "Paraguay": generateStickers(20), "Australia": generateStickers(20), "Turquía": generateStickers(20) },
+            "Grupo E": { "Alemania": generateStickers(20), "Curazao": generateStickers(20), "Costa de Marfil": generateStickers(20), "Ecuador": generateStickers(20) },
+            "Grupo F": { "Países Bajos": generateStickers(20), "Japón": generateStickers(20), "Suecia": generateStickers(20), "Túnez": generateStickers(20) },
+            "Grupo G": { "Bélgica": generateStickers(20), "Egipto": generateStickers(20), "Irán": generateStickers(20), "Nueva Zelanda": generateStickers(20) },
+            "Grupo H": { "España": generateStickers(20), "Cabo Verde": generateStickers(20), "Arabia Saudita": generateStickers(20), "Uruguay": generateStickers(20) },
+            "Grupo I": { "Francia": generateStickers(20), "Senegal": generateStickers(20), "Irak": generateStickers(20), "Noruega": generateStickers(20) },
+            "Grupo J": { "Argentina": generateStickers(20), "Argelia": generateStickers(20), "Austria": generateStickers(20), "Jordania": generateStickers(20) },
+            "Grupo K": { "Portugal": generateStickers(20), "RD Congo": generateStickers(20), "Uzbekistán": generateStickers(20), "Colombia": generateStickers(20) },
+            "Grupo L": { "Inglaterra": generateStickers(20), "Croacia": generateStickers(20), "Ghana": generateStickers(20), "Panamá": generateStickers(20) }
         };
 
         const container = document.getElementById('album-container');
         let savedStickers = JSON.parse(localStorage.getItem('mundial26_stickers')) || {};
-        
-        // Variables para la gráfica de progreso global
-        let totalGlobalStickers = 0;
-        let collectedGlobalStickers = 0;
 
-        // Función para actualizar la gráfica visualmente
-        function updateGlobalProgress() {
-            const fillElement = document.getElementById('global-progress-fill');
-            const textElement = document.getElementById('global-progress-text');
-            
-            const percentage = totalGlobalStickers === 0 ? 0 : Math.round((collectedGlobalStickers / totalGlobalStickers) * 100);
-            
-            fillElement.style.width = `${percentage}%`;
-            textElement.textContent = `${collectedGlobalStickers} / ${totalGlobalStickers} estampas (${percentage}%)`;
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('menu-overlay').classList.toggle('active');
         }
 
-        // Renderizar todo y calcular totales
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            toggleMenu(); 
+            
+            if(viewId === 'view-stats') {
+                renderStatsView(); 
+                const fillElement = document.getElementById('global-progress-fill');
+                const width = fillElement.style.width;
+                fillElement.style.width = '0%';
+                setTimeout(() => { fillElement.style.width = width; }, 50);
+            }
+        }
+
+        function exportarFaltantes() {
+            let faltantesTxt = "⚽ *MIS FALTANTES DEL MUNDIAL 2026* ⚽\n\n";
+            let hayFaltantes = false;
+
+            for (const [groupName, teams] of Object.entries(tournamentData)) {
+                for (const [teamName, stickersArray] of Object.entries(teams)) {
+                    let faltantesEquipo = [];
+                    stickersArray.forEach(sticker => {
+                        if (!savedStickers[`${teamName}-${sticker}`]) {
+                            faltantesEquipo.push(sticker);
+                        }
+                    });
+
+                    if (faltantesEquipo.length > 0 && faltantesEquipo.length < stickersArray.length) {
+                        faltantesTxt += `*${teamName}:* ${faltantesEquipo.join(', ')}\n`;
+                        hayFaltantes = true;
+                    } else if (faltantesEquipo.length === stickersArray.length) {
+                        faltantesTxt += `*${teamName}:* Todas\n`;
+                        hayFaltantes = true;
+                    }
+                }
+            }
+
+            if(!hayFaltantes) {
+                alert("¡Felicidades! Tienes el álbum lleno, no te falta nada.");
+            } else {
+                navigator.clipboard.writeText(faltantesTxt).then(() => {
+                    alert("✅ ¡Lista de faltantes copiada al portapapeles!\n\nAbre WhatsApp y pégala en el grupo de intercambios.");
+                }).catch(err => {
+                    alert("Error al copiar. Tu navegador no soporta esta función automática.");
+                });
+            }
+            toggleMenu();
+        }
+
+        // --- SISTEMA DE RESPALDOS ---
+        function exportarRespaldo() {
+            // Convertimos el objeto JSON a texto y lo encriptamos un poco con btoa()
+            const respaldoBase64 = btoa(JSON.stringify(savedStickers));
+            
+            navigator.clipboard.writeText(respaldoBase64).then(() => {
+                alert("✅ ¡Código de respaldo copiado!\n\nPégalo en WhatsApp o envíatelo por correo, luego ábrelo en tu otro dispositivo y usa la opción 'Cargar Respaldo'.");
+            }).catch(err => {
+                alert("Tu navegador no soporta el copiado automático. Aquí tienes tu código:\n\n" + respaldoBase64);
+            });
+            toggleMenu();
+        }
+
+        function importarRespaldo() {
+            const codigo = prompt("Pega aquí tu código de respaldo:");
+            
+            if (codigo) {
+                try {
+                    // Desencriptamos y validamos que sea un JSON válido
+                    const datosRestaurados = JSON.parse(atob(codigo));
+                    
+                    if (confirm("⚠️ Alerta: Esto reemplazará tu progreso actual en este dispositivo. ¿Estás seguro?")) {
+                        savedStickers = datosRestaurados;
+                        localStorage.setItem('mundial26_stickers', JSON.stringify(savedStickers));
+                        
+                        // Recargar la página para aplicar los cambios visualmente
+                        location.reload(); 
+                    }
+                } catch (error) {
+                    alert("❌ Código inválido. Asegúrate de haberlo copiado completo.");
+                }
+            }
+            toggleMenu();
+        }
+
+        const huntCheckbox = document.getElementById('hunt-mode-checkbox');
+        if(localStorage.getItem('mundial26_huntmode') === 'true') {
+            huntCheckbox.checked = true;
+            document.body.classList.add('hunt-mode');
+        }
+
+        huntCheckbox.addEventListener('change', (e) => {
+            if(e.target.checked) {
+                document.body.classList.add('hunt-mode');
+                localStorage.setItem('mundial26_huntmode', 'true');
+            } else {
+                document.body.classList.remove('hunt-mode');
+                localStorage.setItem('mundial26_huntmode', 'false');
+            }
+        });
+
+        let groupIndex = 0;
         for (const [groupName, teams] of Object.entries(tournamentData)) {
             const groupDetails = document.createElement('details');
             groupDetails.className = 'group-details';
-            
-            if(groupName === "🌟 Especiales") {
-                groupDetails.classList.add('especiales');
-            }
+            groupDetails.id = `group-details-${groupIndex}`;
+            if(groupName === "🌟 Especiales") groupDetails.classList.add('especiales');
 
-            groupDetails.innerHTML = `<summary class="group-summary">${groupName}</summary>`;
+            groupDetails.innerHTML = `
+                <summary class="group-summary">
+                    <div class="group-info">
+                        <span>${groupName}</span>
+                        <span class="group-counter" id="group-counter-${groupIndex}">0/0</span>
+                    </div>
+                </summary>
+            `;
 
+            let teamIndex = 0;
             for (const [teamName, stickersArray] of Object.entries(teams)) {
                 const teamDetails = document.createElement('details');
                 teamDetails.className = 'team-details';
+                teamDetails.id = `team-details-${groupIndex}-${teamIndex}`;
                 
-                const totalStickersForTeam = stickersArray.length;
-                let collectedCount = 0;
-
-                // Sumar al total global del álbum
-                totalGlobalStickers += totalStickersForTeam;
-
-                stickersArray.forEach(stickerLabel => {
-                    const stickerId = `${teamName}-${stickerLabel}`;
-                    if (savedStickers[stickerId]) {
-                        collectedCount++;
-                        collectedGlobalStickers++; // Sumar a las conseguidas globales
-                    }
-                });
-
                 const teamSummary = document.createElement('summary');
                 teamSummary.className = 'team-summary';
                 teamSummary.innerHTML = `
                     <div class="team-info">
-                        <span>${teamName}</span>
-                        <span class="counter" id="counter-${teamName}">${collectedCount}/${totalStickersForTeam}</span>
+                        <span class="team-name" id="team-name-${groupIndex}-${teamIndex}">${teamName}</span>
+                        <span class="counter" id="counter-${groupIndex}-${teamIndex}">0/0</span>
                     </div>
                 `;
 
@@ -376,24 +422,19 @@
 
                     if (savedStickers[stickerId]) {
                         stickerDiv.classList.add('collected');
+                        stickerDiv.style.animation = 'none'; 
                     }
 
                     stickerDiv.addEventListener('click', function() {
                         this.classList.toggle('collected');
-                        const isCollected = this.classList.contains('collected');
-                        
-                        savedStickers[stickerId] = isCollected;
+                        savedStickers[stickerId] = this.classList.contains('collected');
                         localStorage.setItem('mundial26_stickers', JSON.stringify(savedStickers));
+                        
+                        if(this.classList.contains('collected')) {
+                            this.style.animation = ''; 
+                        }
 
-                        // Actualizar contador del equipo
-                        const counterSpan = document.getElementById(`counter-${teamName}`);
-                        let currentCount = parseInt(counterSpan.textContent.split('/')[0]);
-                        currentCount = isCollected ? currentCount + 1 : currentCount - 1;
-                        counterSpan.textContent = `${currentCount}/${totalStickersForTeam}`;
-
-                        // Actualizar contador global y gráfica
-                        isCollected ? collectedGlobalStickers++ : collectedGlobalStickers--;
-                        updateGlobalProgress();
+                        updateAllStats();
                     });
 
                     grid.appendChild(stickerDiv);
@@ -402,13 +443,109 @@
                 teamDetails.appendChild(teamSummary);
                 teamDetails.appendChild(grid);
                 groupDetails.appendChild(teamDetails);
+                teamIndex++;
             }
-
             container.appendChild(groupDetails);
+            groupIndex++;
         }
 
-        // Llamada inicial para pintar la barra la primera vez que se abre la página
-        updateGlobalProgress();
+        function renderStatsView() {
+            const statsContainer = document.getElementById('stats-container');
+            statsContainer.innerHTML = '';
+
+            for (const [groupName, teams] of Object.entries(tournamentData)) {
+                const groupHeader = document.createElement('div');
+                groupHeader.className = 'group-header-stats';
+                groupHeader.textContent = groupName;
+                statsContainer.appendChild(groupHeader);
+
+                for (const [teamName, stickersArray] of Object.entries(teams)) {
+                    let teamTotal = stickersArray.length;
+                    let teamCollected = 0;
+
+                    stickersArray.forEach(sticker => {
+                        if (savedStickers[`${teamName}-${sticker}`]) teamCollected++;
+                    });
+
+                    let percentage = Math.round((teamCollected / teamTotal) * 100);
+                    let isCompleted = percentage === 100;
+
+                    const statCard = document.createElement('div');
+                    statCard.className = 'stat-card';
+                    
+                    let fillColor = isCompleted ? '#FFDF00' : '#009c3b';
+                    let textColor = isCompleted ? '#FFDF00' : '#FFF';
+                    let textShadow = isCompleted ? '0 0 10px rgba(255,223,0,0.5)' : 'none';
+
+                    statCard.innerHTML = `
+                        <div class="stat-header" style="color: ${textColor}; text-shadow: ${textShadow};">
+                            <span>${teamName} ${isCompleted ? '🏆' : ''}</span>
+                            <span>${percentage}%</span>
+                        </div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill" style="width: 0%; background: ${fillColor};"></div>
+                        </div>
+                    `;
+                    statsContainer.appendChild(statCard);
+                    
+                    setTimeout(() => {
+                        statCard.querySelector('.stat-bar-fill').style.width = `${percentage}%`;
+                    }, 50);
+                }
+            }
+        }
+
+        function updateAllStats() {
+            let globalTotal = 0;
+            let globalCollected = 0;
+
+            let gIndex = 0;
+            for (const [groupName, teams] of Object.entries(tournamentData)) {
+                let groupTeamsTotal = Object.keys(teams).length;
+                let groupTeamsCompleted = 0;
+                let tIndex = 0;
+
+                for (const [teamName, stickersArray] of Object.entries(teams)) {
+                    let teamTotal = stickersArray.length;
+                    let teamCollected = 0;
+
+                    stickersArray.forEach(stickerLabel => {
+                        if (savedStickers[`${teamName}-${stickerLabel}`]) teamCollected++;
+                    });
+
+                    globalTotal += teamTotal;
+                    globalCollected += teamCollected;
+
+                    document.getElementById(`counter-${gIndex}-${tIndex}`).textContent = `${teamCollected}/${teamTotal}`;
+                    
+                    const teamDetailsEl = document.getElementById(`team-details-${gIndex}-${tIndex}`);
+                    if (teamCollected === teamTotal) {
+                        teamDetailsEl.classList.add('completed-team');
+                        groupTeamsCompleted++;
+                    } else {
+                        teamDetailsEl.classList.remove('completed-team');
+                    }
+                    
+                    tIndex++;
+                }
+
+                document.getElementById(`group-counter-${gIndex}`).textContent = `${groupTeamsCompleted}/${groupTeamsTotal} Completados`;
+                gIndex++;
+            }
+
+            const fillElement = document.getElementById('global-progress-fill');
+            const textElement = document.getElementById('global-progress-text');
+            const percentage = globalTotal === 0 ? 0 : Math.round((globalCollected / globalTotal) * 100);
+            
+            fillElement.style.width = `${percentage}%`;
+            textElement.textContent = `${globalCollected} / ${globalTotal} (${percentage}%)`;
+            
+            if(document.getElementById('view-stats').classList.contains('active')) {
+                renderStatsView();
+            }
+        }
+
+        updateAllStats();
     </script>
 </body>
 </html>
