@@ -36,6 +36,16 @@
             overflow: hidden;
         }
 
+        /* Color especial para la pestaña de Especiales */
+        .group-details.especiales .group-summary {
+            color: #ffea00;
+            border-bottom: 1px solid #ffea00;
+        }
+        
+        .group-details.especiales .team-details {
+            border-left: 4px solid #ffea00;
+        }
+
         .group-summary {
             font-size: 1.6em;
             font-weight: bold;
@@ -86,9 +96,13 @@
             font-size: 0.9em;
             color: #00d26a;
         }
+        
+        .group-details.especiales .counter {
+            color: #ffea00;
+        }
 
         .team-summary::-webkit-details-marker { display: none; }
-        .team-summary::after { content: '+'; color: #00d26a; font-size: 1.2em; }
+        .team-summary::after { content: '+'; font-size: 1.2em; }
         .team-details[open] > .team-summary::after { content: '-'; }
 
         .stickers-grid {
@@ -109,11 +123,12 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 0.9em; /* Letra un poco más chica para que quepan prefijos como FWC */
             cursor: pointer;
             user-select: none;
             transition: all 0.2s ease;
             color: #aaa;
+            text-align: center;
         }
 
         .sticker:hover { transform: scale(1.08); }
@@ -124,6 +139,14 @@
             border: 2px solid #00d26a;
             box-shadow: 0 0 10px rgba(0, 210, 106, 0.4);
         }
+
+        /* Color dorado para las estampas especiales conseguidas */
+        .group-details.especiales .sticker.collected {
+            background-color: #ffea00;
+            border-color: #ffea00;
+            box-shadow: 0 0 10px rgba(255, 234, 0, 0.4);
+        }
+
     </style>
 </head>
 <body>
@@ -134,63 +157,140 @@
     </div>
 
     <script>
-        // Diccionario oficial con los grupos reales del Mundial 2026
-        const tournamentGroups = {
-            "Grupo A": ["México", "Sudáfrica", "Corea del Sur", "Rep. Checa"],
-            "Grupo B": ["Canadá", "Bosnia y Herzegovina", "Catar", "Suiza"],
-            "Grupo C": ["Brasil", "Marruecos", "Haití", "Escocia"],
-            "Grupo D": ["Estados Unidos", "Paraguay", "Australia", "Turquía"],
-            "Grupo E": ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"],
-            "Grupo F": ["Países Bajos", "Japón", "Suecia", "Túnez"],
-            "Grupo G": ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"],
-            "Grupo H": ["España", "Cabo Verde", "Arabia Saudita", "Uruguay"],
-            "Grupo I": ["Francia", "Senegal", "Irak", "Noruega"],
-            "Grupo J": ["Argentina", "Argelia", "Austria", "Jordania"],
-            "Grupo K": ["Portugal", "RD Congo", "Uzbekistán", "Colombia"],
-            "Grupo L": ["Inglaterra", "Croacia", "Ghana", "Panamá"]
+        // Función auxiliar para generar automáticamente los números de las estampas
+        // Ejemplo: generate(20) -> ["1", "2", ... "20"]
+        // Ejemplo: generate(14, "C") -> ["C1", "C2", ... "C14"]
+        const generateStickers = (count, prefix = "") => {
+            return Array.from({length: count}, (_, i) => `${prefix}${i + 1}`);
         };
 
-        const STICKERS_PER_TEAM = 20;
-        const container = document.getElementById('album-container');
+        // Nueva estructura de datos súper flexible
+        const tournamentData = {
+            "🌟 Especiales": {
+                "Panini": ["00"],
+                "FIFA World Cup (FWC)": generateStickers(19, "FWC "), // Puse 18 por poner un número, ajustalo a las que vengan en el álbum
+                "Coca-Cola": generateStickers(14, "C")
+            },
+            "Grupo A": {
+                "México": generateStickers(20),
+                "Sudáfrica": generateStickers(20),
+                "Corea del Sur": generateStickers(20),
+                "Rep. Checa": generateStickers(20)
+            },
+            "Grupo B": {
+                "Canadá": generateStickers(20),
+                "Bosnia y Herzegovina": generateStickers(20),
+                "Catar": generateStickers(20),
+                "Suiza": generateStickers(20)
+            },
+            "Grupo C": {
+                "Brasil": generateStickers(20),
+                "Marruecos": generateStickers(20),
+                "Haití": generateStickers(20),
+                "Escocia": generateStickers(20)
+            },
+            "Grupo D": {
+                "Estados Unidos": generateStickers(20),
+                "Paraguay": generateStickers(20),
+                "Australia": generateStickers(20),
+                "Turquía": generateStickers(20)
+            },
+            "Grupo E": {
+                "Alemania": generateStickers(20),
+                "Curazao": generateStickers(20),
+                "Costa de Marfil": generateStickers(20),
+                "Ecuador": generateStickers(20)
+            },
+            "Grupo F": {
+                "Países Bajos": generateStickers(20),
+                "Japón": generateStickers(20),
+                "Suecia": generateStickers(20),
+                "Túnez": generateStickers(20)
+            },
+            "Grupo G": {
+                "Bélgica": generateStickers(20),
+                "Egipto": generateStickers(20),
+                "Irán": generateStickers(20),
+                "Nueva Zelanda": generateStickers(20)
+            },
+            "Grupo H": {
+                "España": generateStickers(20),
+                "Cabo Verde": generateStickers(20),
+                "Arabia Saudita": generateStickers(20),
+                "Uruguay": generateStickers(20)
+            },
+            "Grupo I": {
+                "Francia": generateStickers(20),
+                "Senegal": generateStickers(20),
+                "Irak": generateStickers(20),
+                "Noruega": generateStickers(20)
+            },
+            "Grupo J": {
+                "Argentina": generateStickers(20),
+                "Argelia": generateStickers(20),
+                "Austria": generateStickers(20),
+                "Jordania": generateStickers(20)
+            },
+            "Grupo K": {
+                "Portugal": generateStickers(20),
+                "RD Congo": generateStickers(20),
+                "Uzbekistán": generateStickers(20),
+                "Colombia": generateStickers(20)
+            },
+            "Grupo L": {
+                "Inglaterra": generateStickers(20),
+                "Croacia": generateStickers(20),
+                "Ghana": generateStickers(20),
+                "Panamá": generateStickers(20)
+            }
+        };
 
-        // Cargar datos guardados
+        const container = document.getElementById('album-container');
         let savedStickers = JSON.parse(localStorage.getItem('mundial26_stickers')) || {};
 
-        // Generar la interfaz
-        for (const [groupName, teams] of Object.entries(tournamentGroups)) {
+        // Renderizar todo
+        for (const [groupName, teams] of Object.entries(tournamentData)) {
             
             const groupDetails = document.createElement('details');
             groupDetails.className = 'group-details';
+            
+            // Si es el grupo de especiales, le damos un estilo distinto (dorado)
+            if(groupName === "🌟 Especiales") {
+                groupDetails.classList.add('especiales');
+            }
+
             groupDetails.innerHTML = `<summary class="group-summary">${groupName}</summary>`;
 
-            teams.forEach(team => {
+            for (const [teamName, stickersArray] of Object.entries(teams)) {
                 const teamDetails = document.createElement('details');
                 teamDetails.className = 'team-details';
                 
-                // Calcular cuántas estampas tiene ya este equipo
+                const totalStickersForTeam = stickersArray.length;
                 let collectedCount = 0;
-                for (let i = 1; i <= STICKERS_PER_TEAM; i++) {
-                    if (savedStickers[`${team}-${i}`]) collectedCount++;
-                }
 
-                // Crear el encabezado del equipo con su contador
+                // Contar cuántas tenemos de este equipo/sección
+                stickersArray.forEach(stickerLabel => {
+                    if (savedStickers[`${teamName}-${stickerLabel}`]) collectedCount++;
+                });
+
                 const teamSummary = document.createElement('summary');
                 teamSummary.className = 'team-summary';
                 teamSummary.innerHTML = `
                     <div class="team-info">
-                        <span>${team}</span>
-                        <span class="counter" id="counter-${team}">${collectedCount}/${STICKERS_PER_TEAM}</span>
+                        <span>${teamName}</span>
+                        <span class="counter" id="counter-${teamName}">${collectedCount}/${totalStickersForTeam}</span>
                     </div>
                 `;
 
                 const grid = document.createElement('div');
                 grid.className = 'stickers-grid';
 
-                for (let i = 1; i <= STICKERS_PER_TEAM; i++) {
-                    const stickerId = `${team}-${i}`;
+                // Generar cada cuadrito
+                stickersArray.forEach(stickerLabel => {
+                    const stickerId = `${teamName}-${stickerLabel}`;
                     const stickerDiv = document.createElement('div');
                     stickerDiv.className = 'sticker';
-                    stickerDiv.textContent = i;
+                    stickerDiv.textContent = stickerLabel;
 
                     if (savedStickers[stickerId]) {
                         stickerDiv.classList.add('collected');
@@ -200,24 +300,22 @@
                         this.classList.toggle('collected');
                         const isCollected = this.classList.contains('collected');
                         
-                        // Guardar estado
                         savedStickers[stickerId] = isCollected;
                         localStorage.setItem('mundial26_stickers', JSON.stringify(savedStickers));
 
-                        // Actualizar el contador visualmente
-                        const counterSpan = document.getElementById(`counter-${team}`);
+                        const counterSpan = document.getElementById(`counter-${teamName}`);
                         let currentCount = parseInt(counterSpan.textContent.split('/')[0]);
                         currentCount = isCollected ? currentCount + 1 : currentCount - 1;
-                        counterSpan.textContent = `${currentCount}/${STICKERS_PER_TEAM}`;
+                        counterSpan.textContent = `${currentCount}/${totalStickersForTeam}`;
                     });
 
                     grid.appendChild(stickerDiv);
-                }
+                });
 
                 teamDetails.appendChild(teamSummary);
                 teamDetails.appendChild(grid);
                 groupDetails.appendChild(teamDetails);
-            });
+            }
 
             container.appendChild(groupDetails);
         }
